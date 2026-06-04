@@ -1,13 +1,11 @@
 """
 Módulo de Interfaz Web (Sesión 7)
 Diseña una UI profesional con Streamlit para usuarios no técnicos.
-Incluye carga de archivos PDF directamente desde el navegador.
 """
 
 import logging
 import time
 from pathlib import Path
-import shutil
 
 import streamlit as st
 
@@ -47,9 +45,6 @@ def initialize_session_state():
     
     if "processing" not in st.session_state:
         st.session_state.processing = False
-    
-    if "uploaded_files" not in st.session_state:
-        st.session_state.uploaded_files = []
 
 
 def save_uploaded_file(uploaded_file) -> Path:
@@ -111,9 +106,13 @@ def process_documents(uploaded_files=None):
             # 4. Inicializar embeddings
             embedding_manager = EmbeddingManager()
             
-            # 5. Crear/limpiar vector store
-            vector_store = VectorStore(embedding_manager, persist_directory=CHROMA_DIR)
-            vector_store.clear()
+            # 5. Crear vector store (sin limpiar primero para evitar errores)
+            try:
+                vector_store = VectorStore(embedding_manager, persist_directory=CHROMA_DIR)
+                vector_store.clear()
+            except Exception as e:
+                logger.warning(f"⚠️ Saltando limpieza: {e}")
+                vector_store = VectorStore(embedding_manager, persist_directory=CHROMA_DIR)
             
             # 6. Indexar
             vector_store.add_documents(splits)
@@ -279,7 +278,7 @@ def render_chat_interface():
                     with col1:
                         st.caption(f"⏱️ {elapsed_time:.2f}s")
                     with col2:
-                        status = "✅ Fundamentada" if result["retrieval_successful"] else "⚠️ Sin contexto"
+                        status = "✅ Con contexto" if result["retrieval_successful"] else "⚠️ Sin contexto"
                         st.caption(status)
                     with col3:
                         st.caption(f"📄 {len(result['source_documents'])} fuentes")

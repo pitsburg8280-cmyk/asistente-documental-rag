@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 class RAGChain:
     """
     Pipeline lógico unificado que conecta recuperación de información con inferencia generativa.
-    Orquesta flujos de datos asíncronos entre ChromaDB y Ollama.
     """
     
     def __init__(
@@ -35,7 +34,7 @@ class RAGChain:
         Args:
             vector_store: Instancia de la base de datos vectorial
             model_name: Modelo de Ollama a utilizar
-            temperature: Temperatura de generación (baja para determinismo)
+            temperature: Temperatura de generación
         """
         self.vector_store = vector_store
         self.model_name = model_name
@@ -49,11 +48,9 @@ class RAGChain:
                 model=model_name,
                 temperature=temperature,
                 timeout=MODEL_TIMEOUT,
-                # Forzar formato determinista
                 format="",
-                # Configuración adicional para estabilidad
-                num_ctx=4096,  # Ventana de contexto
-                num_predict=512,  # Máximo de tokens a generar
+                num_ctx=4096,
+                num_predict=512,
             )
             
             # Inicializar prompts
@@ -147,49 +144,42 @@ class RAGChain:
             # Recuperar documentos relevantes
             retrieved_docs = self.vector_store.similarity_search(question, k=TOP_K)
             
-            # Verificar si hay documentos relevantes
-            if not retrieved_docs:
-                logger.warning("⚠️ No se encontraron documentos relevantes")
-                return {
-                    "answer": "No tengo información suficiente en los documentos proporcionados para responder esta pregunta. Por favor, verifica si el tema está cubierto en los PDFs cargados.",
-                    "source_documents": [],
-                    "retrieval_successful": False
-                }
-            
             # Formatear contexto
             context = self._format_context(retrieved_docs)
             
-            # Ejecutar cadena
-            answer = self.chain.invoke({"question": question})
+            # Si hay documentos, SIEMPRE intentar responder
+            if retrieved_docs:
+                logger.info(f"✅ Recuperados {len(retrieved_docs)} documentos, generando respuesta...")
+                
+                # Ejecutar cadena
+                answer = self.chain.invoke({"question": question})
+                
+                result = {
+                    "answer": answer,
+                    "source_documents": [
+                        {
+                            "content": doc.page_content[:200] + "...",
+                            "source": doc.metadata.get("source", "Desconocido"),
+                            "score": float(score)
+                        }
+                        for doc, score in retrieved_docs
+                    ],
+                    "retrieval_successful": True,
+                    "context_used": context[:500] + "..." if len(context) > 500 else context
+                }
+                
+                logger.info(f"✅ Respuesta generada: {len(answer)} caracteres")
+                return result
             
-            # Verificar si la respuesta indica falta de información
-            no_info_phrases = [
-                "no tengo información",
-                "no encuentro información",
-                "no está en el contexto",
-                "no puedo responder",
-                "no sé"
-            ]
-            
-            has_no_info = any(phrase in answer.lower() for phrase in no_info_phrases)
-            
-            result = {
-                "answer": answer,
-                "source_documents": [
-                    {
-                        "content": doc.page_content[:200] + "...",
-                        "source": doc.metadata.get("source", "Desconocido"),
-                        "score": float(score)
-                    }
-                    for doc, score in retrieved_docs
-                ],
-                "retrieval_successful": not has_no_info,
-                "context_used": context[:500] + "..." if len(context) > 500 else context
-            }
-            
-            logger.info(f"✅ Respuesta generada: {len(answer)} caracteres")
-            return result
-            
+            else:
+                # Solo si NO hay documentos en absoluto
+                logger.warning("⚠️ No se encontraron documentos relevantes")
+                return {
+                    "answer": "No se encontraron documentos relevantes. Por favor, verifica que los PDFs contengan información sobre este tema.",
+                    "source_documents": [],
+                    "retrieval_successful": False
+                }
+                
         except Exception as e:
             logger.error(f"❌ Error en ejecución RAG: {str(e)}")
             return {
@@ -211,5 +201,5 @@ class RAGChain:
             "temperature": self.temperature,
             "top_k": TOP_K,
             "timeout": MODEL_TIMEOUT,
-            "prompt_type": "anti-hallucination-rag"
+            "prompt_type": "permissive-rag"
         }

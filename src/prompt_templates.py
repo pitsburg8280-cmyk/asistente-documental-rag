@@ -1,6 +1,6 @@
 """
 Módulo de Ingeniería de Prompts (Sesión 6)
-Diseña plantillas avanzadas que restringen el comportamiento del LLM para evitar alucinaciones.
+Diseña plantillas que permiten respuestas con contexto limitado.
 """
 
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
@@ -8,39 +8,39 @@ from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTempla
 
 class PromptManager:
     """
-    Gestor de prompts que condiciona las respuestas del modelo mediante 
-    instrucciones estrictas del sistema y plantillas de control.
+    Gestor de prompts que permite respuestas con el contexto disponible,
+    incluso si es limitado.
     """
     
     @staticmethod
     def get_rag_prompt() -> ChatPromptTemplate:
         """
-        Plantilla principal del sistema RAG con restricciones anti-alucinación.
+        Plantilla principal del sistema RAG - PERMISIVA.
+        Responde con lo que tenga, sin rechazar por poco contexto.
         
         Returns:
             ChatPromptTemplate configurado con mensajes de sistema y humano
         """
         
-        # Mensaje del sistema: Restricciones absolutas de comportamiento
-        system_template = """Eres un Asistente Documental Inteligente especializado en responder preguntas basándote EXCLUSIVAMENTE en el contexto proporcionado.
+        # Mensaje del sistema: PERMISIVO
+        system_template = """Eres un Asistente Documental Inteligente. Tu trabajo es analizar el contexto proporcionado y responder basándote en él.
 
-REGLAS ESTRICTAS:
-1. Responde ÚNICAMENTE usando la información del contexto proporcionado.
-2. Si la respuesta no está en el contexto, responde EXACTAMENTE: "No tengo información suficiente en los documentos proporcionados para responder esta pregunta. Por favor, verifica si el tema está cubierto en los PDFs cargados."
-3. NO inventes, supongas ni generes información que no esté en el contexto.
-4. NO uses conocimiento externo, por muy obvio que te parezca.
-5. Mantén las respuestas concisas, precisas y directas.
-6. Cita la fuente del documento cuando sea relevante.
-7. Si el contexto es insuficiente o ambiguo, indica explícitamente la limitación.
+INSTRUCCIONES:
+1. Analiza el contexto proporcionado cuidadosamente.
+2. Responde usando la información del contexto, aunque sea breve o limitada.
+3. Si el contexto es corto, resume o describe lo que contiene.
+4. NO inventes información que no esté en el contexto.
+5. Si realmente no hay NADA de información relevante, indica: "El documento no contiene información sobre este tema específico."
+6. Sé conciso pero completo con la información disponible.
 
-Contexto proporcionado:
+Contexto del documento:
 {context}
 """
 
         # Mensaje humano: Formato de la pregunta
         human_template = """Pregunta: {question}
 
-Responde basándote ÚNICAMENTE en el contexto proporcionado arriba. Si no encuentras la respuesta, indica que no tienes la información."""
+Responde basándote en el contexto proporcionado arriba. Si el contexto es limitado, indica qué información contiene."""
         
         # Construir el prompt template
         messages = [
@@ -69,20 +69,4 @@ Pregunta de seguimiento: {question}
 Pregunta independiente:"""
         
         return ChatPromptTemplate.from_template(template)
-    
-    @staticmethod
-    def get_validation_prompt() -> ChatPromptTemplate:
-        """
-        Prompt para validar si una respuesta está fundamentada en el contexto.
-        
-        Returns:
-            ChatPromptTemplate para verificación de fundamentación
-        """
-        template = """Evalúa si la siguiente respuesta está fundamentada en el contexto proporcionado.
 
-Contexto: {context}
-Respuesta: {answer}
-
-La respuesta está fundamentada en el contexto? Responde solo 'SÍ' o 'NO' y explica brevemente por qué."""
-        
-        return ChatPromptTemplate.from_template(template)

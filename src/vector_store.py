@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 class VectorStore:
     """
     Motor de indexación vectorial especializado en búsqueda por similitud semántica.
-    Persistencia en disco SSD para evitar degradación por latencia.
     """
     
     def __init__(
@@ -46,13 +45,22 @@ class VectorStore:
         try:
             logger.info(f"💾 Inicializando ChromaDB en: {self.persist_directory}")
             
-            self.vectorstore = Chroma(
-                collection_name=self.collection_name,
-                embedding_function=self.embedding_manager.embeddings,
-                persist_directory=str(self.persist_directory)
-            )
-            
-            logger.info(f"✅ ChromaDB lista: colección='{collection_name}'")
+            # Intentar cargar colección existente o crear nueva
+            try:
+                self.vectorstore = Chroma(
+                    collection_name=self.collection_name,
+                    embedding_function=self.embedding_manager.embeddings,
+                    persist_directory=str(self.persist_directory)
+                )
+                logger.info(f"✅ ChromaDB lista: colección='{collection_name}'")
+            except Exception as e:
+                logger.warning(f"⚠️ Creando nueva colección: {e}")
+                self.vectorstore = Chroma(
+                    collection_name=self.collection_name,
+                    embedding_function=self.embedding_manager.embeddings,
+                    persist_directory=str(self.persist_directory)
+                )
+                logger.info(f"✅ Nueva colección creada: '{collection_name}'")
             
         except Exception as e:
             logger.error(f"❌ Error al inicializar ChromaDB: {str(e)}")

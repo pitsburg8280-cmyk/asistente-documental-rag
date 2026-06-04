@@ -17,12 +17,12 @@ CHROMA_DIR.mkdir(exist_ok=True)
 
 # Configuración del Modelo LLM
 MODEL_NAME = "llama3.2:3b"  # Alternativa: "phi3:mini"
-MODEL_TEMPERATURE = 0.1  # Baja temperatura para respuestas deterministas
-MODEL_TIMEOUT = 30  # Segundos de timeout para Ollama
+MODEL_TEMPERATURE = 0.7  # Aumentado para más flexibilidad
+MODEL_TIMEOUT = 60  # Más tiempo para respuestas
 
 # Configuración de Chunking (Sesión 2)
-CHUNK_SIZE = 512  # Tamaño óptimo para contexto del modelo 3B
-CHUNK_OVERLAP = 128  # Solapamiento para retención de contexto semántico
+CHUNK_SIZE = 1000  # AUMENTADO: Más contenido por fragmento
+CHUNK_OVERLAP = 200  # Aumentado para mejor contexto
 CHUNK_SEPARATORS = ["\n\n", "\n", ". ", " ", ""]  # Jerarquía de separación
 
 # Configuración de Embeddings (Sesión 3)
@@ -31,18 +31,18 @@ EMBEDDING_DEVICE = "cpu"  # Cambiar a "cuda" si hay GPU disponible
 
 # Configuración de ChromaDB (Sesión 4)
 COLLECTION_NAME = "documentos_academicos"
-SIMILARITY_THRESHOLD = 0.7  # Umbral mínimo de similitud de coseno
-TOP_K = 4  # Número de documentos a recuperar
+SIMILARITY_THRESHOLD = 0.1  # 🔴 BAJADO RADICALMENTE: Aceptar casi cualquier similitud
+TOP_K = 10  # Aumentado para recuperar más contexto
 
 # Configuración de la UI (Sesión 7)
 UI_TITLE = "🤖 Asistente Documental Inteligente"
-UI_SUBTITLE = "Sistema RAG 100% Local - Sin alucinaciones garantizado"
+UI_SUBTITLE = "Sistema RAG 100% Local - Responde con el contexto disponible"
 MAX_HISTORY = 10  # Mensajes de historial a mantener
 
 # Mensajes del sistema
 SYSTEM_MESSAGES = {
-    "no_documents": "⚠️ No hay documentos procesados. Por favor, carga PDFs en la carpeta 'data/' y procesa los documentos.",
+    "no_documents": "⚠️ No hay documentos procesados. Por favor, sube PDFs en el panel lateral y procesa los documentos.",
     "processing": "⏳ Procesando documentos... Esto puede tardar unos minutos.",
     "ready": "✅ Sistema listo. Puedes realizar consultas sobre tus documentos.",
-    "no_context": "No tengo información suficiente en los documentos proporcionados para responder esta pregunta. Por favor, verifica si el tema está cubierto en los PDFs cargados.",
+    "no_context": "El documento proporcionado tiene información limitada. Te comparto lo que encontré en el contexto disponible.",
 }
