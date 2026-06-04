@@ -70,16 +70,16 @@ class TextSplitter:
             # Ejecutar fragmentación
             splits = self.splitter.split_documents(documents)
             
-            # Enriquecer metadatos de cada fragmento
+                        # Enriquecer metadatos de cada fragmento (valores simples solo)
             for i, split in enumerate(splits):
                 split.metadata.update({
                     "chunk_index": i,
                     "chunk_size": len(split.page_content),
-                    "splitter_config": {
-                        "chunk_size": self.chunk_size,
-                        "chunk_overlap": self.chunk_overlap
-                    }
+                    "splitter_chunk_size": self.chunk_size,
+                    "splitter_chunk_overlap": self.chunk_overlap
                 })
+
+
             
             logger.info(f"✅ Fragmentación completada: {len(splits)} chunks generados")
             logger.info(f"📊 Promedio de tamaño: {sum(len(s.page_content) for s in splits) / len(splits):.0f} caracteres")
