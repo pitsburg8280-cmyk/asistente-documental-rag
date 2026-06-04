@@ -21,7 +21,6 @@ Sistema de Generación Aumentada por Recuperación (RAG) completamente funcional
 
 ## 🏗️ Arquitectura del Sistema
 
-
 ```mermaid
 graph LR
     subgraph "Ingesta y Procesamiento"
