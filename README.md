@@ -42,3 +42,25 @@ graph LR
     style F fill:#e0f2f1,stroke:#00695c,stroke-width:3px
 
 
+
+## 📋 Guía de Uso
+
+### Opción 1: Carga Directa desde el Navegador (Recomendada)
+1. **Abre la aplicación** con `streamlit run main.py`
+2. **Arrastra o selecciona tus PDFs** en el panel lateral (sección "Cargar Documentos")
+3. Haz clic en **"Procesar Documentos Subidos"**
+4. Espera a que el sistema indexe los documentos
+5. **Comienza a hacer preguntas** en la interfaz de chat
+
+### Opción 2: Carpeta Local (Avanzada)
+1. **Coloca tus PDFs** en la carpeta `data/` (opcional)
+2. **Inicia la aplicación** con `streamlit run main.py`
+3. Haz clic en **"Procesar Documentos Locales"** en el panel lateral
+4. Realiza consultas en la interfaz de chat
+
+### Gestión de Documentos
+- **Visualizar**: Lista de PDFs cargados en el panel lateral
+- **Eliminar**: Botón 🗑️ junto a cada archivo para removerlo
+- **Limpiar DB**: Botón "Limpiar Base de Datos" para reiniciar el sistema
+
+

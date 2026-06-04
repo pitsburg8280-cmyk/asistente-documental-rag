@@ -1,11 +1,13 @@
 """
 Módulo de Interfaz Web (Sesión 7)
 Diseña una UI profesional con Streamlit para usuarios no técnicos.
+Incluye carga de archivos PDF directamente desde el navegador.
 """
 
 import logging
 import time
 from pathlib import Path
+import shutil
 
 import streamlit as st
 
@@ -45,55 +47,56 @@ def initialize_session_state():
     
     if "processing" not in st.session_state:
         st.session_state.processing = False
+    
+    if "uploaded_files" not in st.session_state:
+        st.session_state.uploaded_files = []
 
 
-def render_sidebar():
-    """Renderiza el panel lateral con controles de configuración."""
-    with st.sidebar:
-        st.header("⚙️ Panel de Control")
+def save_uploaded_file(uploaded_file) -> Path:
+    """
+    Guarda un archivo subido en la carpeta data/.
+    
+    Args:
+        uploaded_file: Objeto UploadedFile de Streamlit
         
-        # Sección de carga de documentos
-        st.subheader("📁 Documentos")
+    Returns:
+        Ruta donde se guardó el archivo
+    """
+    try:
+        file_path = DATA_DIR / uploaded_file.name
         
-        # Mostrar PDFs existentes
-        pdf_files = list(DATA_DIR.glob("*.pdf"))
-        if pdf_files:
-            st.write(f"📄 {len(pdf_files)} PDFs encontrados:")
-            for pdf in pdf_files:
-                st.write(f"   • {pdf.name}")
-        else:
-            st.warning("No hay PDFs en la carpeta 'data/'")
+        # Guardar archivo
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.getvalue())
         
-        # Botón de procesamiento
-        if st.button("🔄 Procesar Documentos", disabled=st.session_state.processing):
-            process_documents()
+        logger.info(f"✅ Archivo guardado: {file_path}")
+        return file_path
         
-        # Estado del sistema
-        st.subheader("📊 Estado del Sistema")
-        if st.session_state.documents_processed:
-            st.success("✅ Sistema listo")
-        else:
-            st.info("⏳ Esperando procesamiento")
-        
-        # Información del modelo
-        st.subheader("🧠 Modelo")
-        st.write("• LLM: llama3.2:3b")
-        st.write("• Embeddings: all-MiniLM-L6-v2")
-        st.write("• VectorDB: ChromaDB")
-        
-        # Botón para limpiar historial
-        if st.button("🗑️ Limpiar Chat"):
-            st.session_state.messages = []
-            st.rerun()
+    except Exception as e:
+        logger.error(f"❌ Error al guardar archivo: {str(e)}")
+        raise
 
 
-def process_documents():
-    """Pipeline completo de procesamiento de documentos."""
+def process_documents(uploaded_files=None):
+    """
+    Pipeline completo de procesamiento de documentos.
+    Procesa tanto archivos locales como subidos desde la interfaz.
+    
+    Args:
+        uploaded_files: Lista de archivos subidos desde Streamlit (opcional)
+    """
     st.session_state.processing = True
     
     try:
         with st.spinner(SYSTEM_MESSAGES["processing"]):
-            # 1. Cargar documentos
+            
+            # 1. Guardar archivos subidos (si los hay)
+            if uploaded_files:
+                for uploaded_file in uploaded_files:
+                    save_uploaded_file(uploaded_file)
+                st.success(f"📥 {len(uploaded_files)} archivo(s) subido(s) correctamente")
+            
+            # 2. Cargar documentos (locales + subidos)
             loader = DocumentLoader(DATA_DIR)
             documents = loader.load_all_pdfs()
             
@@ -101,21 +104,21 @@ def process_documents():
                 st.error("No se encontraron PDFs para procesar")
                 return
             
-            # 2. Fragmentar
+            # 3. Fragmentar
             splitter = TextSplitter()
             splits = splitter.split_documents(documents)
             
-            # 3. Inicializar embeddings
+            # 4. Inicializar embeddings
             embedding_manager = EmbeddingManager()
             
-            # 4. Crear/limpiar vector store
+            # 5. Crear/limpiar vector store
             vector_store = VectorStore(embedding_manager, persist_directory=CHROMA_DIR)
             vector_store.clear()
             
-            # 5. Indexar
+            # 6. Indexar
             vector_store.add_documents(splits)
             
-            # 6. Inicializar cadena RAG
+            # 7. Inicializar cadena RAG
             rag_chain = RAGChain(vector_store)
             
             # Guardar en estado de sesión
@@ -134,6 +137,83 @@ def process_documents():
         st.session_state.processing = False
 
 
+def render_sidebar():
+    """Renderiza el panel lateral con controles de configuración y carga de archivos."""
+    with st.sidebar:
+        st.header("⚙️ Panel de Control")
+        
+        # ==========================================
+        # SECCIÓN DE CARGA DE ARCHIVOS
+        # ==========================================
+        st.subheader("📁 Cargar Documentos")
+        
+        # Componente de subida de archivos
+        uploaded_files = st.file_uploader(
+            "Arrastra o selecciona tus PDFs",
+            type=["pdf"],
+            accept_multiple_files=True,
+            help="Los archivos se guardarán automáticamente en la carpeta data/"
+        )
+        
+        # Mostrar PDFs existentes
+        pdf_files = list(DATA_DIR.glob("*.pdf"))
+        
+        if pdf_files:
+            st.write(f"📄 {len(pdf_files)} PDFs en el sistema:")
+            for pdf in pdf_files:
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.write(f"   • {pdf.name}")
+                with col2:
+                    if st.button("🗑️", key=f"del_{pdf.name}"):
+                        try:
+                            pdf.unlink()
+                            st.success(f"Eliminado: {pdf.name}")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error al eliminar: {e}")
+        else:
+            st.info("No hay PDFs procesados. Sube archivos o colócalos en data/")
+        
+        # Botón de procesamiento
+        if uploaded_files:
+            if st.button("🔄 Procesar Documentos Subidos", disabled=st.session_state.processing):
+                process_documents(uploaded_files)
+        else:
+            if st.button("🔄 Procesar Documentos Locales", disabled=st.session_state.processing):
+                process_documents()
+        
+        # Estado del sistema
+        st.subheader("📊 Estado del Sistema")
+        if st.session_state.documents_processed:
+            st.success("✅ Sistema listo")
+        else:
+            st.info("⏳ Esperando procesamiento")
+        
+        # Información del modelo
+        st.subheader("🧠 Modelo")
+        st.write("• LLM: llama3.2:3b")
+        st.write("• Embeddings: all-MiniLM-L6-v2")
+        st.write("• VectorDB: ChromaDB")
+        
+        # Botón para limpiar historial
+        if st.button("🗑️ Limpiar Chat"):
+            st.session_state.messages = []
+            st.rerun()
+        
+        # Botón para limpiar base de datos
+        if st.button("⚠️ Limpiar Base de Datos"):
+            try:
+                vector_store = VectorStore(EmbeddingManager(), persist_directory=CHROMA_DIR)
+                vector_store.clear()
+                st.session_state.documents_processed = False
+                st.session_state.rag_chain = None
+                st.success("Base de datos limpiada")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+
 def render_chat_interface():
     """Renderiza la interfaz principal de chat."""
     st.title(UI_TITLE)
@@ -145,10 +225,12 @@ def render_chat_interface():
         st.info(SYSTEM_MESSAGES["no_documents"])
         st.markdown("""
         ### 🚀 Primeros Pasos:
-        1. Coloca tus archivos PDF en la carpeta `data/`
-        2. Haz clic en **'Procesar Documentos'** en el panel lateral
+        1. **Sube tus PDFs** desde el panel lateral (arrastra o selecciona archivos)
+        2. Haz clic en **'Procesar Documentos Subidos'**
         3. Espera a que el sistema indexe los documentos
-        4. Comienza a hacer preguntas
+        4. Comienza a hacer preguntas sobre tus documentos
+        
+        💡 También puedes colocar PDFs directamente en la carpeta `data/` y procesarlos desde el panel lateral.
         """)
         return
     
@@ -233,3 +315,4 @@ def render_ui():
 
 if __name__ == "__main__":
     render_ui()
+

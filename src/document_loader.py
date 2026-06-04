@@ -1,11 +1,13 @@
 """
 Módulo de Ingesta de Documentos (Sesión 1)
 Extrae texto plano desde archivos PDF manteniendo metadatos estructurados.
+Soporta tanto archivos locales como objetos de memoria (BytesIO).
 """
 
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
+from io import BytesIO
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
@@ -19,6 +21,7 @@ class DocumentLoader:
     """
     Cargador robusto de documentos PDF.
     Maneja PDFs multi-columna, tablas y metadatos sin pérdida de información.
+    Soporta archivos locales y objetos de memoria (BytesIO).
     """
     
     def __init__(self, data_dir: Path):
@@ -31,7 +34,7 @@ class DocumentLoader:
         self.data_dir = Path(data_dir)
         self.documents: List[Document] = []
         
-    def load_pdf(self, file_path: Path) -> List[Document]:
+    def load_pdf(self, file_path: Union[Path, str]) -> List[Document]:
         """
         Carga un único archivo PDF con manejo de excepciones.
         
@@ -42,6 +45,7 @@ class DocumentLoader:
             Lista de documentos LangChain con metadatos
         """
         try:
+            file_path = Path(file_path)
             logger.info(f"Procesando PDF: {file_path.name}")
             loader = PyPDFLoader(str(file_path))
             docs = loader.load()
@@ -60,6 +64,49 @@ class DocumentLoader:
             
         except Exception as e:
             logger.error(f"❌ Error al procesar '{file_path.name}': {str(e)}")
+            return []
+    
+    def load_pdf_from_bytes(self, file_bytes: bytes, file_name: str) -> List[Document]:
+        """
+        Carga un PDF desde bytes en memoria (útil para archivos subidos desde Streamlit).
+        
+        Args:
+            file_bytes: Contenido del PDF en bytes
+            file_name: Nombre del archivo para metadatos
+            
+        Returns:
+            Lista de documentos LangChain con metadatos
+        """
+        try:
+            logger.info(f"Procesando PDF desde memoria: {file_name}")
+            
+            # Guardar temporalmente para PyPDFLoader
+            temp_path = self.data_dir / f"temp_{file_name}"
+            with open(temp_path, "wb") as f:
+                f.write(file_bytes)
+            
+            # Cargar con PyPDFLoader
+            loader = PyPDFLoader(str(temp_path))
+            docs = loader.load()
+            
+            # Enriquecer metadatos
+            for doc in docs:
+                doc.metadata.update({
+                    "source": file_name,
+                    "file_path": str(temp_path),
+                    "total_pages": len(docs),
+                    "document_type": "pdf",
+                    "loaded_from": "memory"
+                })
+            
+            # Limpiar archivo temporal
+            temp_path.unlink()
+            
+            logger.info(f"✅ PDF '{file_name}' procesado desde memoria: {len(docs)} páginas")
+            return docs
+            
+        except Exception as e:
+            logger.error(f"❌ Error al procesar '{file_name}' desde memoria: {str(e)}")
             return []
     
     def load_all_pdfs(self) -> List[Document]:
@@ -107,3 +154,4 @@ class DocumentLoader:
             "total_pages": total_pages,
             "sources": sources
         }
+
