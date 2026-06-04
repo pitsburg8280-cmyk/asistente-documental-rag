@@ -122,6 +122,44 @@ class VectorStore:
             logger.error(f"❌ Error en búsqueda: {str(e)}")
             return []
     
+    def clear(self) -> None:
+        """
+        Elimina todos los vectores de la colección.
+        Maneja el caso de colección no inicializada.
+        """
+        try:
+            # Intentar eliminar la colección existente
+            self.vectorstore.delete_collection()
+            logger.info("🗑️ Colección anterior eliminada")
+            
+            # Reinicializar el vectorstore limpio después de eliminar
+            self.vectorstore = Chroma(
+                collection_name=self.collection_name,
+                embedding_function=self.embedding_manager.embeddings,
+                persist_directory=str(self.persist_directory)
+            )
+            logger.info("✅ Colección reinicializada limpia")
+            
+        except Exception as e:
+            error_msg = str(e).lower()
+            
+            # Si la colección no existe o no está inicializada, solo reinicializar
+            if "not initialized" in error_msg or "does not exist" in error_msg:
+                logger.warning("⚠️ Colección no inicializada, creando nueva...")
+                try:
+                    self.vectorstore = Chroma(
+                        collection_name=self.collection_name,
+                        embedding_function=self.embedding_manager.embeddings,
+                        persist_directory=str(self.persist_directory)
+                    )
+                    logger.info("✅ Nueva colección creada")
+                except Exception as e2:
+                    logger.error(f"❌ Error al crear nueva colección: {str(e2)}")
+                    raise
+            else:
+                logger.error(f"❌ Error al limpiar colección: {str(e)}")
+                raise
+    
     def get_collection_stats(self) -> dict:
         """
         Retorna estadísticas de la colección.
@@ -142,9 +180,40 @@ class VectorStore:
             return {}
     
     def clear(self) -> None:
-        """Elimina todos los vectores de la colección."""
+        """
+        Elimina todos los vectores de la colección.
+        Maneja el caso de colección no inicializada.
+        """
         try:
+            # Intentar eliminar la colección existente
             self.vectorstore.delete_collection()
-            logger.info("🗑️ Colección eliminada")
+            logger.info("🗑️ Colección anterior eliminada")
+            
+            # Reinicializar el vectorstore limpio después de eliminar
+            self.vectorstore = Chroma(
+                collection_name=self.collection_name,
+                embedding_function=self.embedding_manager.embeddings,
+                persist_directory=str(self.persist_directory)
+            )
+            logger.info("✅ Colección reinicializada limpia")
+            
         except Exception as e:
-            logger.error(f"❌ Error al limpiar colección: {str(e)}")
+            error_msg = str(e).lower()
+            
+            # Si la colección no existe o no está inicializada, solo reinicializar
+            if "not initialized" in error_msg or "does not exist" in error_msg:
+                logger.warning("⚠️ Colección no inicializada, creando nueva...")
+                try:
+                    self.vectorstore = Chroma(
+                        collection_name=self.collection_name,
+                        embedding_function=self.embedding_manager.embeddings,
+                        persist_directory=str(self.persist_directory)
+                    )
+                    logger.info("✅ Nueva colección creada")
+                except Exception as e2:
+                    logger.error(f"❌ Error al crear nueva colección: {str(e2)}")
+                    raise
+            else:
+                logger.error(f"❌ Error al limpiar colección: {str(e)}")
+                raise
+
