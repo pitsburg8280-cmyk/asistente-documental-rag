@@ -8,51 +8,49 @@ Sistema de Generación Aumentada por Recuperación (RAG) completamente funcional
 
 ## 🎯 Características Principales
 
-- **100% Local**: Sin dependencias de APIs comerciales ni compromiso de privacidad
-- **Procesamiento de PDFs**: Extracción robusta de texto con manejo de metadatos
-- **Embeddings Semánticos**: Codificación vectorial con `all-MiniLM-L6-v2`
-- **Base de Datos Vectorial**: ChromaDB persistente en disco para búsqueda de alta velocidad
-- **Mitigación de Alucinaciones**: Prompts estrictos que restringen respuestas al contexto documental
-- **Interfaz Profesional**: UI interactiva con Streamlit y manejo de historial
-- **Rendimiento Optimizado**: Compatible con hardware de gama media (GPU opcional)
-- **OCR Integrado**: Procesamiento de PDFs escaneados e imágenes con Tesseract
+| Característica | Descripción |
+|----------------|-------------|
+| **100% Local** | Sin dependencias de APIs comerciales ni compromiso de privacidad |
+| **Procesamiento de PDFs** | Extracción robusta de texto con manejo de metadatos |
+| **Embeddings Semánticos** | Codificación vectorial con `all-MiniLM-L6-v2` |
+| **Base de Datos Vectorial** | ChromaDB persistente en disco para búsqueda de alta velocidad |
+| **Mitigación de Alucinaciones** | Prompts estrictos que restringen respuestas al contexto documental |
+| **Interfaz Profesional** | UI interactiva con Streamlit y manejo de historial |
+| **Rendimiento Optimizado** | Compatible con hardware de gama media (GPU opcional) |
+| **OCR Integrado** | Procesamiento de PDFs escaneados e imágenes con Tesseract |
 
 ---
 
 ## 🏗️ Arquitectura del Sistema
 
-```mermaid
-graph LR
-    subgraph "Ingesta y Procesamiento"
-        A[("📄 PDFs<br/>Locales")] --> B["✂️ Chunking<br/>Avanzado"]
-        B --> C["🧠 Embeddings<br/>all-MiniLM-L6-v2"]
-    end
-    
-    C --> D[("💾 ChromaDB<br/>Vectorial")]
-    
-    subgraph "Recuperación y Generación"
-        D --> E["🤖 LLM Local<br/>(Ollama)"]
-        E --> F["🖥️ Streamlit<br/>UI"]
-    end
-    
-    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
-    style B fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
-    style C fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
-    style D fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
-    style E fill:#fce4ec,stroke:#c62828,stroke-width:2px
-    style F fill:#e0f2f1,stroke:#00695c,stroke-width:3px
+### Flujo de Datos
 
+| Paso | Componente | Tecnología | Función |
+|------|------------|------------|---------|
+| 1 | 📄 PDFs Locales | PyPDFLoader / Tesseract OCR | Ingesta de documentos digitales o escaneados |
+| 2 | ✂️ Chunking | RecursiveCharacterTextSplitter | Fragmentación semántica con solapamiento |
+| 3 | 🧠 Embeddings | all-MiniLM-L6-v2 | Vectorización densa 384-dimensiones |
+| 4 | 💾 Vector DB | ChromaDB | Almacenamiento e indexación por similitud de coseno |
+| 5 | 🔍 Retriever | Similitud Coseno | Recuperación de top-k documentos relevantes |
+| 6 | 🤖 LLM Local | Ollama + llama3.2:3b | Generación de respuestas fundamentadas |
+| 7 | 🖥️ UI | Streamlit | Interfaz web interactiva |
 
-🚀 Instalación y Configuración
-Requisitos Previos
- 
-Python 3.9+
-Ollama instalado localmente
-Tesseract OCR (para PDFs escaneados)
-Git
+**Flujo:** PDFs → Chunks → Embeddings → ChromaDB → Recuperación → LLM → Respuesta
 
+---
 
-1. Clonar el Repositorio
+## 🚀 Instalación y Configuración
+
+### Requisitos Previos
+
+- Python 3.9+
+- [Ollama](https://ollama.com) instalado localmente
+- [Tesseract OCR](https://github.com/UB-Mannheim/tesseract/wiki) (para PDFs escaneados)
+- Git
+
+### 1. Clonar el Repositorio
+
+```bash
 git clone https://github.com/pitsburg8280-cmyk/asistente-documental-rag.git
 cd asistente-documental-rag
 
