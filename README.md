@@ -122,18 +122,17 @@ El sistema implementa múltiples capas de seguridad:
 
 
 ## 📁 Estructura de Sesiones
-![Estructura de Sesiones](https://i.imgur.com/H1vAgVQ.png)
 
-| Sesión | Módulo | Archivo |
-|--------|--------|---------|
-| 1 | 📄 Ingesta de Documentos | `src/document_loader.py` |
-| 2 | ✂️ Chunking Avanzado | `src/text_splitter.py` |
-| 3 | 🧠 Embeddings Semánticos | `src/embeddings.py` |
-| 4 | 💾 Base de Datos Vectorial | `src/vector_store.py` |
-| 5 | ⚙️ Orquestación RAG | `src/rag_chain.py` |
-| 6 | 🛡️ Ingeniería de Prompts | `src/prompt_templates.py` |
-| 7 | 🖥️ Interfaz Web | `src/ui.py` |
-| 8 | 🧪 Pruebas de Estrés | `tests/test_stress.py` |
+| # | Emoji | Sesión / Módulo | Archivo | Descripción |
+|---|:-----:|-----------------|---------|-------------|
+| 1 | 📄 | **Ingesta de Documentos** | `src/document_loader.py` | Carga PDFs digitales y escaneados (OCR) |
+| 2 | ✂️ | **Chunking Avanzado** | `src/text_splitter.py` | Fragmentación semántica con solapamiento |
+| 3 | 🧠 | **Embeddings Semánticos** | `src/embeddings.py` | Vectorización con all-MiniLM-L6-v2 |
+| 4 | 💾 | **Base de Datos Vectorial** | `src/vector_store.py` | Indexación en ChromaDB persistente |
+| 5 | ⚙️ | **Orquestación RAG** | `src/rag_chain.py` | Pipeline recuperación + generación LLM |
+| 6 | 🛡️ | **Ingeniería de Prompts** | `src/prompt_templates.py` | Prompts anti-alucinaciones |
+| 7 | 🖥️ | **Interfaz Web** | `src/ui.py` | UI Streamlit con carga de archivos |
+| 8 | 🧪 | **Pruebas de Estrés** | `tests/test_stress.py` | Validación de robustez y seguridad |
 
 
 
