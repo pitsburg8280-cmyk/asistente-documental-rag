@@ -25,17 +25,7 @@ Sistema de Generación Aumentada por Recuperación (RAG) completamente funcional
 
 ### Flujo de Datos
 
-| Paso | Componente | Tecnología | Función |
-|------|------------|------------|---------|
-| 1 | 📄 PDFs Locales | PyPDFLoader / Tesseract OCR | Ingesta de documentos digitales o escaneados |
-| 2 | ✂️ Chunking | RecursiveCharacterTextSplitter | Fragmentación semántica con solapamiento |
-| 3 | 🧠 Embeddings | all-MiniLM-L6-v2 | Vectorización densa 384-dimensiones |
-| 4 | 💾 Vector DB | ChromaDB | Almacenamiento e indexación por similitud de coseno |
-| 5 | 🔍 Retriever | Similitud Coseno | Recuperación de top-k documentos relevantes |
-| 6 | 🤖 LLM Local | Ollama + llama3.2:3b | Generación de respuestas fundamentadas |
-| 7 | 🖥️ UI | Streamlit | Interfaz web interactiva |
-
-**Flujo:** PDFs → Chunks → Embeddings → ChromaDB → Recuperación → LLM → Respuesta
+![Arquitectura del Sistema](https://mermaid.ink/img/Z3JhcGggTFIKICAgIHN1YmdyYXBoICJJbmdlc3RhIHkgUHJvY2VzYW1pZW50byIKICAgICAgICBBWyJQREZzIExvY2FsZXMiXSAtLT4gQlsiQ2h1bmtpbmcgQXZhbnphZG8iXQogICAgICAgIEIgLS0+IENbIkVtYmVkZGluZ3MgYWxsLU1pbmlMTS1MNi12MiJdCiAgICBlbmQKICAgIEMgLS0+IERbIkNocm9tYURCIFZlY3RvcmlhbCJdCiAgICBzdWJncmFwaCAiUmVjdXBlcmFjaW9uIHkgR2VuZXJhY2lvbiIKICAgICAgICBEIC0tPiBFWyJMTE0gTG9jYWwgT2xsYW1hIl0KICAgICAgICBFIC0tPiBGWyJTdHJlYW1saXQgVUkiXQogICAgZW5kCiAgICBzdHlsZSBBIGZpbGw6I2UzZjJmZCxzdHJva2U6IzE1NjVjMCxzdHJva2Utd2lkdGg6M3B4CiAgICBzdHlsZSBCIGZpbGw6I2ZmZjNlMCxzdHJva2U6I2VmNmMwMCxzdHJva2Utd2lkdGg6MnB4CiAgICBzdHlsZSBDIGZpbGw6I2YzZTVmNSxzdHJva2U6IzZhMWI5YSxzdHJva2Utd2lkdGg6MnB4CiAgICBzdHlsZSBEIGZpbGw6I2U4ZjVlOSxzdHJva2U6IzJlN2QzMixzdHJva2Utd2lkdGg6M3B4CiAgICBzdHlsZSBFIGZpbGw6I2ZjZTRlYyxzdHJva2U6I2M2MjgyOCxzdHJva2Utd2lkdGg6MnB4CiAgICBzdHlsZSBGIGZpbGw6I2UwZjJmMSxzdHJva2U6IzAwNjk1YyxzdHJva2Utd2lkdGg6M3B4?type=png&bgColor=white)
 
 ---
 
@@ -133,9 +123,7 @@ El sistema implementa múltiples capas de seguridad:
 
 ## 📁 Estructura de Sesiones
 
-## 📁 Estructura de Sesiones
-
-![Estructura de Sesiones](https://mermaid.ink
+![Estructura de Sesiones](https://mermaid.ink/img/Z3JhcGggTFIKICAgIHN1YmdyYXBoICJDcm9ub2dyYW1hIGRlIDggU2VzaW9uZXMiCiAgICAgICAgZGlyZWN0aW9uIFRCCiAgICAgICAgUzFbIlNlc2lvbiAxOiBJbmdlc3RhIl0gLS0+IEYxWyJkb2N1bWVudF9sb2FkZXIucHkiXQogICAgICAgIFMyWyJTZXNpb24gMjogQ2h1bmtpbmciXSAtLT4gRjJbInRleHRfc3BsaXR0ZXIucHkiXQogICAgICAgIFMzWyJTZXNpb24gMzogRW1iZWRkaW5ncyJdIC0tPiBGM1siZW1iZWRkaW5ncy5weSJdCiAgICAgICAgUzRbIlNlc2lvbiA0OiBWZWN0b3IgREIiXSAtLT4gRjRbInZlY3Rvcl9zdG9yZS5weSJdCiAgICAgICAgUzVbIlNlc2lvbiA1OiBSQUciXSAtLT4gRjVbInJhZ19jaGFpbi5weSJdCiAgICAgICAgUzZbIlNlc2lvbiA2OiBQcm9tcHRzIl0gLS0+IEY2WyJwcm9tcHRfdGVtcGxhdGVzLnB5Il0KICAgICAgICBTN1siU2VzaW9uIDc6IFVJIl0gLS0+IEY3WyJ1aS5weSJdCiAgICAgICAgUzhbIlNlc2lvbiA4OiBUZXN0cyJdIC0tPiBGOFsidGVzdF9zdHJlc3MucHkiXQogICAgZW5kCiAgICBzdHlsZSBTMSBmaWxsOiNlM2YyZmQsc3Ryb2tlOiMxNTY1YzAsc3Ryb2tlLXdpZHRoOjJweAogICAgc3R5bGUgUzIgZmlsbDojZmZmM2UwLHN0cm9rZTojZWY2YzAwLHN0cm9rZS13aWR0aDoycHgKICAgIHN0eWxlIFMzIGZpbGw6I2YzZTVmNSxzdHJva2U6IzZhMWI5YSxzdHJva2Utd2lkdGg6MnB4CiAgICBzdHlsZSBTNCBmaWxsOiNlOGY1ZTksc3Ryb2tlOiMyZTdkMzIsc3Ryb2tlLXdpZHRoOjJweAogICAgc3R5bGUgUzUgZmlsbDojZmZmOGUxLHN0cm9rZTojZmY4ZjAwLHN0cm9rZS13aWR0aDoycHgKICAgIHN0eWxlIFM2IGZpbGw6I2ZmZWJlZSxzdHJva2U6I2M2MjgyOCxzdHJva2Utd2lkdGg6MnB4CiAgICBzdHlsZSBTNyBmaWxsOiNlMGYyZjEsc3Ryb2tlOiMwMDY5NWMsc3Ryb2tlLXdpZHRoOjJweAogICAgc3R5bGUgUzggZmlsbDojZmNlNGVjLHN0cm9rZTojYWQxNDU3LHN0cm9rZS13aWR0aDoycHg=?type=png&bgColor=white)
 
 
 
