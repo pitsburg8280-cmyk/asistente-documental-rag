@@ -125,17 +125,16 @@ El sistema implementa múltiples capas de seguridad:
 
 ![Estructura de Sesiones](https://raw.githubusercontent.com/pitsburg8280-cmyk/asistente-documental-rag/main/docs/sesiones.png)
 
-
 | Sesión | Módulo | Archivo |
 |--------|--------|---------|
-| 1 | Ingesta de Documentos | `src/document_loader.py` |
-| 2 | Chunking Avanzado | `src/text_splitter.py` |
-| 3 | Embeddings Semánticos | `src/embeddings.py` |
-| 4 | Base de Datos Vectorial | `src/vector_store.py` |
-| 5 | Orquestación RAG | `src/rag_chain.py` |
-| 6 | Ingeniería de Prompts | `src/prompt_templates.py` |
-| 7 | Interfaz Web | `src/ui.py` |
-| 8 | Pruebas de Estrés | `tests/test_stress.py` |
+| 1 | 📄 Ingesta de Documentos | `src/document_loader.py` |
+| 2 | ✂️ Chunking Avanzado | `src/text_splitter.py` |
+| 3 | 🧠 Embeddings Semánticos | `src/embeddings.py` |
+| 4 | 💾 Base de Datos Vectorial | `src/vector_store.py` |
+| 5 | ⚙️ Orquestación RAG | `src/rag_chain.py` |
+| 6 | 🛡️ Ingeniería de Prompts | `src/prompt_templates.py` |
+| 7 | 🖥️ Interfaz Web | `src/ui.py` |
+| 8 | 🧪 Pruebas de Estrés | `tests/test_stress.py` |
 
 
 
