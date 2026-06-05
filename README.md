@@ -133,31 +133,10 @@ El sistema implementa múltiples capas de seguridad:
 
 ## 📁 Estructura de Sesiones
 
-```mermaid
-graph LR
-    subgraph "Cronograma de 8 Sesiones"
-        direction TB
-        
-        S1["📄 Sesión 1<br/>Ingesta de Documentos"] --> F1["src/document_loader.py"]
-        S2["✂️ Sesión 2<br/>Chunking Avanzado"] --> F2["src/text_splitter.py"]
-        S3["🧠 Sesión 3<br/>Embeddings Semánticos"] --> F3["src/embeddings.py"]
-        S4["💾 Sesión 4<br/>Base de Datos Vectorial"] --> F4["src/vector_store.py"]
-        S5["⚙️ Sesión 5<br/>Orquestación RAG"] --> F5["src/rag_chain.py"]
-        S6["🛡️ Sesión 6<br/>Ingeniería de Prompts"] --> F6["src/prompt_templates.py"]
-        S7["🖥️ Sesión 7<br/>Interfaz Web"] --> F7["src/ui.py"]
-        S8["🧪 Sesión 8<br/>Pruebas de Estrés"] --> F8["tests/test_stress.py"]
-    end
-   
-    style S1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
-    style S2 fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
-    style S3 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
-    style S4 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-    style S5 fill:#fff8e1,stroke:#ff8f00,stroke-width:2px
-    style S6 fill:#ffebee,stroke:#c62828,stroke-width:2px
-    style S7 fill:#e0f2f1,stroke:#00695c,stroke-width:2px
-    style S8 fill:#fce4ec,stroke:#ad1457,stroke-width:2px
-    
-```
+## 📁 Estructura de Sesiones
+
+![Estructura de Sesiones](https://mermaid.ink
+
 
 
 📝 Licencia
