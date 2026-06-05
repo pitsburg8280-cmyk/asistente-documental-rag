@@ -122,8 +122,7 @@ El sistema implementa múltiples capas de seguridad:
 
 
 ## 📁 Estructura de Sesiones
-
-![Estructura de Sesiones](https://raw.githubusercontent.com/pitsburg8280-cmyk/asistente-documental-rag/main/docs/sesiones.png)
+![Estructura de Sesiones](https://i.imgur.com/H1vAgVQ.png)
 
 | Sesión | Módulo | Archivo |
 |--------|--------|---------|
@@ -135,6 +134,7 @@ El sistema implementa múltiples capas de seguridad:
 | 6 | 🛡️ Ingeniería de Prompts | `src/prompt_templates.py` |
 | 7 | 🖥️ Interfaz Web | `src/ui.py` |
 | 8 | 🧪 Pruebas de Estrés | `tests/test_stress.py` |
+
 
 
 
