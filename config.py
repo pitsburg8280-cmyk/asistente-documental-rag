@@ -21,8 +21,8 @@ MODEL_TEMPERATURE = 0.7  # Aumentado para más flexibilidad
 MODEL_TIMEOUT = 60  # Más tiempo para respuestas
 
 # Configuración de Chunking (Sesión 2)
-CHUNK_SIZE = 1000  # AUMENTADO: Más contenido por fragmento
-CHUNK_OVERLAP = 200  # Aumentado para mejor contexto
+CHUNK_SIZE = 500  # AUMENTADO: Más contenido por fragmento
+CHUNK_OVERLAP = 100  # Aumentado para mejor contexto
 CHUNK_SEPARATORS = ["\n\n", "\n", ". ", " ", ""]  # Jerarquía de separación
 
 # Configuración de Embeddings (Sesión 3)

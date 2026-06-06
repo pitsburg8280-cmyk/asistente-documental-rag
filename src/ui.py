@@ -103,6 +103,14 @@ def process_documents(uploaded_files=None):
             splitter = TextSplitter()
             splits = splitter.split_documents(documents)
             
+            # VERIFICAR QUE HAY CHUNKS
+            if not splits:
+                st.error("❌ No se pudieron extraer chunks del documento. El PDF puede estar vacío o ser una imagen no legible.")
+                return
+            
+            st.info(f"📄 {len(splits)} chunks generados para indexación")
+
+            
             # 4. Inicializar embeddings
             embedding_manager = EmbeddingManager()
             
